@@ -31,7 +31,7 @@ public class CardService {
 	}
 	
 	@Transactional(readOnly=true)
-	public List<Card> 모두가져오기(Long id,Card card) {
+	public List<Card> 모두가져오기() {
 		return cardRepository.findAll();
 	}
 	
@@ -40,14 +40,14 @@ public class CardService {
 		Card cardEntity = cardRepository.findById(id)
 				.orElseThrow(()->new IllegalArgumentException("id를 확인해주세요!!")); 
 		//영속화(card 오브젝트)->영속화된 것은 영속성 컨텍스트에 보관됨
-		cardEntity.setCardNo(card.getCardNo());
 		cardEntity.setCardName(card.getCardName());
 		
 		return cardEntity;
-	}// 함수 종료=>트랜잭션 종료=>영속화 되어있는 데이터를 DB로 갱신(flush라고 함)
+	}// 함수 종료=>트랜잭션 종료=>영속화 되어있는 데이터를 DB로 갱신(flush라고 함)=>commit =====>더티체킹
 	
 	public String 삭제하기(Long id) {
-		return cardRepository;
+		cardRepository.deleteById(id);//오류가 터지면 익셉션을 탐
+		
+		return "ok";
 	}
 }
-//https://us.api.blizzard.com/hearthstone/cards/678?locale=ko_KR
