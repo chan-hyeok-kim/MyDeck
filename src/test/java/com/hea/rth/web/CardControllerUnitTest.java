@@ -1,10 +1,18 @@
 package com.hea.rth.web;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -67,7 +76,91 @@ public class CardControllerUnitTest {
 		
 	}
 	
+	@Test
+	public void findAll_테스트() throws Exception{
+		//given
+		List<Card> cards=new ArrayList<>();
+		cards.add(new Card(1L,"스프링 부트"));
+		cards.add(new Card(2L,"리액트"));
+		when(cardService.모두가져오기()).thenReturn(cards);
+		
+		//when
+		ResultActions resultActions=mockMvc.perform(get("/card")
+				.accept(MediaType.APPLICATION_JSON_UTF8));
+		
+		//then
+		resultActions
+		  .andExpect(status().isOk())
+		  .andExpect(jsonPath("$", Matchers.hasSize(2)))
+		  .andExpect(jsonPath("$.[0].cardName").value("스프링 부트"))
+		  .andDo(MockMvcResultHandlers.print());
+		  
+	}
 	
+	@Test
+	public void findById_테스트() throws Exception{
+		//given
+		Long id=1L;
+		when(cardService.한건가져오기(id)).thenReturn(new Card(1L,"스프링 따라하기"));
+		
+		//when
+		ResultActions resultActions=mockMvc.perform(get("/card/{id}",id)
+				.accept(MediaType.APPLICATION_JSON_UTF8));
+		
+		//then
+		resultActions
+		  .andExpect(status().isOk())
+		  .andExpect(jsonPath("$.cardName").value("스프링 따라하기"))
+		  .andDo(MockMvcResultHandlers.print());
+		
+	}
 	
-	
+	@Test
+	public void update_테스트() throws Exception{
+		//given
+		Long id=1L;
+		Card card=new Card(null,"자바 따라하기");
+		String content=new ObjectMapper().writeValueAsString(card);
+		
+		when(cardService.수정하기(id,card))
+		  .thenReturn(new Card(1L,"자바 따라하기"));
+		
+		//when
+		ResultActions resultActions=mockMvc.perform(put("/card/{id}",id)
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.content(content)
+				.accept(MediaType.APPLICATION_JSON_UTF8));
+		
+		//then
+		resultActions
+		  .andExpect(status().isOk())
+		  .andExpect(jsonPath("$.cardName").value("자바 따라하기"))
+		  .andDo(MockMvcResultHandlers.print());
+		
+	}
+
+
+	@Test
+	public void delete_테스트() throws Exception{
+		//given
+		Long id=1L;
+		
+		when(cardService.삭제하기(id)).thenReturn("ok");
+		
+		//when
+		ResultActions resultAction=mockMvc.perform(delete("/card/{id}",id)
+				.accept(MediaType.TEXT_PLAIN));
+		
+		//then
+		resultAction
+		  .andExpect(status().isOk())
+		  .andDo(MockMvcResultHandlers.print());
+		
+		MvcResult reqMvcResult= resultAction.andReturn();
+		String result=reqMvcResult.getResponse().getContentAsString();
+		
+		assertEquals("ok", result);
+		
+	}
+
 }

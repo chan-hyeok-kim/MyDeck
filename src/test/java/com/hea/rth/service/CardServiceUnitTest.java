@@ -1,10 +1,15 @@
 package com.hea.rth.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.hea.rth.domain.Card;
 import com.hea.rth.domain.CardRepository;
 
 /**
@@ -25,9 +30,24 @@ import com.hea.rth.domain.CardRepository;
 public class CardServiceUnitTest {
 
 	@InjectMocks
-	private CardRepository cardRepository;
-	
-	@Mock
 	private CardService cardService;
 	
+	@Mock
+	private CardRepository cardRepository;
+	
+	@Test
+	public void save_테스트() {
+		//given
+		Card card=new Card(1L,"카드 넣었다");
+		
+		//stub
+		when(cardRepository.save(card)).thenReturn(card);
+		
+		//when
+		Card cardEntity=cardService.저장하기(card);
+		
+		//then
+		assertEquals(cardEntity,card);
+	}
+	//실제 서비스에 따라 엄청 다르다
 }

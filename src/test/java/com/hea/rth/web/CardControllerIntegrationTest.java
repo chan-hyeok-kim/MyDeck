@@ -1,10 +1,23 @@
 package com.hea.rth.web;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,12 +26,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hea.rth.domain.Card;
+import com.hea.rth.domain.CardRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,6 +57,31 @@ public class CardControllerIntegrationTest {
 	@Autowired
 	private MockMvc mockMvc;
 	
+	@Autowired
+	private CardRepository cardRepository;
+	
+	@Autowired
+	private EntityManager entityManager;
+	//JPA가 이걸 구현함
+	
+	@BeforeEach //JUnit4에서는 @Before. 각각 메서드 실행전에 이걸 먼저 실행해라
+	public void init() {
+//		List<Card> cards=new ArrayList<>();
+//		cards.add(new Card(null,"스프링 부트"));
+//		cards.add(new Card(null,"리액트"));
+//		cards.add(new Card(null,"Junit"));
+//		cardRepository.saveAll(cards);
+		//위처럼 테스트케이스가 자동으로 만들어지게 해도 되고
+		//각각 테스트케이스를 만들어서 해도 된다. 개인 취향
+		
+		entityManager.createNativeQuery("ALTER SEQUENCE SEQ_CARD RESTART WITH 1").executeUpdate();
+	}
+	
+//	@AfterEach
+//	public void end() {
+//		cardRepository.deleteAll();
+//	}
+	
 	@Test
 	public void save_테스트() throws Exception {
 		//given(테스트를 위한 준비)
@@ -62,4 +102,105 @@ public class CardControllerIntegrationTest {
 		
 	}
 	
+	@Test
+	public void findAll_테스트() throws Exception{
+		//given
+		List<Card> cards=new ArrayList<>();
+		cards.add(new Card(null,"스프링 부트"));
+		cards.add(new Card(null,"리액트"));
+		cards.add(new Card(null,"Junit"));
+		cardRepository.saveAll(cards);
+		
+		//when
+		ResultActions resultActions=mockMvc.perform(get("/card")
+				.accept(MediaType.APPLICATION_JSON_UTF8));
+		
+		//then
+		resultActions
+		  .andExpect(status().isOk())
+		  .andExpect(jsonPath("$.[2].cardNo").value(3L))
+		  .andExpect(jsonPath("$", Matchers.hasSize(3)))
+		  .andExpect(jsonPath("$.[0].cardName").value("스프링 부트"))
+		  .andDo(MockMvcResultHandlers.print());
+		  
+	}
+	
+	@Test
+	public void findById_테스트() throws Exception{
+		//given
+		List<Card> cards=new ArrayList<>();
+		cards.add(new Card(null,"스프링 부트"));
+		cards.add(new Card(null,"리액트"));
+		cards.add(new Card(null,"Junit"));
+		cardRepository.saveAll(cards);
+		
+		Long id=2L;
+		
+		//when
+		ResultActions resultActions=mockMvc.perform(get("/card/{id}",id)
+				.accept(MediaType.APPLICATION_JSON_UTF8));
+		
+		//then
+		resultActions
+		  .andExpect(status().isOk())
+		  .andExpect(jsonPath("$.cardName").value("리액트"))
+		  .andDo(MockMvcResultHandlers.print());
+		
+	}
+	
+	@Test
+	public void update_테스트() throws Exception{
+		//given
+		List<Card> cards=new ArrayList<>();
+		cards.add(new Card(null,"스프링 부트"));
+		cards.add(new Card(null,"리액트"));
+		cards.add(new Card(null,"Junit"));
+		cardRepository.saveAll(cards);
+		
+		Long id=3L;
+		Card card=new Card(null,"자바 따라하기");
+		String content=new ObjectMapper().writeValueAsString(card);
+		
+		
+		//when
+		ResultActions resultActions=mockMvc.perform(put("/card/{id}",id)
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.content(content)
+				.accept(MediaType.APPLICATION_JSON_UTF8));
+		
+		//then
+		resultActions
+		  .andExpect(status().isOk())
+		  .andExpect(jsonPath("$.cardNo").value(3L))
+		  .andExpect(jsonPath("$.cardName").value("자바 따라하기"))
+		  .andDo(MockMvcResultHandlers.print());
+		
+	}
+	
+	@Test
+	public void delete_테스트() throws Exception{
+		//given
+		List<Card> cards=new ArrayList<>();
+		cards.add(new Card(null,"스프링 부트"));
+		cards.add(new Card(null,"리액트"));
+		cards.add(new Card(null,"Junit"));
+		cardRepository.saveAll(cards);
+		Long id=1L;
+		
+		
+		//when
+		ResultActions resultAction=mockMvc.perform(delete("/card/{id}",id)
+				.accept(MediaType.TEXT_PLAIN));
+		
+		//then
+		resultAction
+		  .andExpect(status().isOk())
+		  .andDo(MockMvcResultHandlers.print());
+		
+		MvcResult reqMvcResult= resultAction.andReturn();
+		String result=reqMvcResult.getResponse().getContentAsString();
+		
+		assertEquals("ok", result);
+		
+	}
 }

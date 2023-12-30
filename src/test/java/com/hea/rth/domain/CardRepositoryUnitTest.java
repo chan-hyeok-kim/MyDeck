@@ -1,5 +1,8 @@
 package com.hea.rth.domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -15,10 +18,22 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @Transactional
-@AutoConfigureTestDatabase(replace = Replace.ANY)
+@AutoConfigureTestDatabase(replace = Replace.NONE)
 @DataJpaTest
 public class CardRepositoryUnitTest {
 
 	@Autowired
 	private CardRepository cardRepository;
+	
+	@Test
+	public void save_테스트() {
+		//given
+		Card card=new Card(null,"카드 넣었다");
+		
+		//when
+		Card cardEntity=cardRepository.save(card);
+		
+		//then
+		assertEquals("카드 넣었다", cardEntity.getCardName());
+	}
 }
