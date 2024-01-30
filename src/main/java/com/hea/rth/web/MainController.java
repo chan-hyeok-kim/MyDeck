@@ -2,6 +2,7 @@ package com.hea.rth.web;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.hea.rth.domain.Card;
+import com.hea.rth.domain.Deck;
 import com.hea.rth.service.CardService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class MainController {
 
 	private final CardService cardService;
 	
+	@CrossOrigin
 	@GetMapping("/card")
 	public ResponseEntity<?> findAll(){
 		
@@ -32,12 +35,13 @@ public class MainController {
 		
 		
 		
-		return new ResponseEntity<>(cardService.모두가져오기(),HttpStatus.OK);
+		return new ResponseEntity<>(cardService.모두가져오기(),HttpStatus.OK);//200
 	}
 	
+	@CrossOrigin
 	@PostMapping("/card")
 	public ResponseEntity<?> save(@RequestBody Card card){
-		return new ResponseEntity<>(cardService.저장하기(card),HttpStatus.CREATED);
+		return new ResponseEntity<>(cardService.저장하기(card),HttpStatus.CREATED);//201
 	}
 	
 	@GetMapping("/card/{id}")
