@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.hea.rth.domain.Card;
+import com.hea.rth.domain.Deck;
 import com.hea.rth.service.CardService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,13 +35,13 @@ public class MainController {
 		
 		
 		
-		return new ResponseEntity<>(cardService.모두가져오기(),HttpStatus.OK);
+		return new ResponseEntity<>(cardService.모두가져오기(),HttpStatus.OK);//200
 	}
 	
 	@CrossOrigin
 	@PostMapping("/card")
 	public ResponseEntity<?> save(@RequestBody Card card){
-		return new ResponseEntity<>(cardService.저장하기(card),HttpStatus.CREATED);
+		return new ResponseEntity<>(cardService.저장하기(card),HttpStatus.CREATED);//201
 	}
 	
 	@CrossOrigin
