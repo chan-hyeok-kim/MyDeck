@@ -35,7 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hea.rth.domain.Card;
 import com.hea.rth.domain.CardRepository;
 
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 통합 테스트
@@ -48,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
  * - 하지만 Test메서드나 Test클래스에서는 무조건 롤백.
  * 
  */
-@Slf4j
+
 @Transactional
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -85,7 +84,7 @@ public class CardControllerIntegrationTest {
 	@Test
 	public void save_테스트() throws Exception {
 		//given(테스트를 위한 준비)
-		Card card=new Card(null,"스프링 따라하기");
+		Card card=new Card(null,"스프링 따라하기","");
 		String content=new ObjectMapper().writeValueAsString(card);
 		
 		//when(테스트 실행)
@@ -106,9 +105,9 @@ public class CardControllerIntegrationTest {
 	public void findAll_테스트() throws Exception{
 		//given
 		List<Card> cards=new ArrayList<>();
-		cards.add(new Card(null,"스프링 부트"));
-		cards.add(new Card(null,"리액트"));
-		cards.add(new Card(null,"Junit"));
+		cards.add(new Card(null,"스프링 부트",""));
+		cards.add(new Card(null,"리액트",""));
+		cards.add(new Card(null,"Junit",""));
 		cardRepository.saveAll(cards);
 		
 		//when
@@ -129,9 +128,9 @@ public class CardControllerIntegrationTest {
 	public void findById_테스트() throws Exception{
 		//given
 		List<Card> cards=new ArrayList<>();
-		cards.add(new Card(null,"스프링 부트"));
-		cards.add(new Card(null,"리액트"));
-		cards.add(new Card(null,"Junit"));
+		cards.add(new Card(null,"스프링 부트",""));
+		cards.add(new Card(null,"리액트",""));
+		cards.add(new Card(null,"Junit",""));
 		cardRepository.saveAll(cards);
 		
 		Long id=2L;
@@ -152,13 +151,13 @@ public class CardControllerIntegrationTest {
 	public void update_테스트() throws Exception{
 		//given
 		List<Card> cards=new ArrayList<>();
-		cards.add(new Card(null,"스프링 부트"));
-		cards.add(new Card(null,"리액트"));
-		cards.add(new Card(null,"Junit"));
+		cards.add(new Card(null,"스프링 부트",""));
+		cards.add(new Card(null,"리액트",""));
+		cards.add(new Card(null,"Junit",""));
 		cardRepository.saveAll(cards);
 		
 		Long id=3L;
-		Card card=new Card(null,"자바 따라하기");
+		Card card=new Card(null,"자바 따라하기","");
 		String content=new ObjectMapper().writeValueAsString(card);
 		
 		
@@ -181,9 +180,9 @@ public class CardControllerIntegrationTest {
 	public void delete_테스트() throws Exception{
 		//given
 		List<Card> cards=new ArrayList<>();
-		cards.add(new Card(null,"스프링 부트"));
-		cards.add(new Card(null,"리액트"));
-		cards.add(new Card(null,"Junit"));
+		cards.add(new Card(null,"스프링 부트",""));
+		cards.add(new Card(null,"리액트",""));
+		cards.add(new Card(null,"Junit",""));
 		cardRepository.saveAll(cards);
 		Long id=1L;
 		

@@ -29,14 +29,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hea.rth.domain.Card;
 import com.hea.rth.service.CardService;
 
-import lombok.extern.slf4j.Slf4j;
+
 
 // 단위테스트(Controller관련 로직만 띄우기)
 // 컨트롤러 관련 로직.(Controller,Filter, ControllerAdvice 등등을 메모리에 올림)
 
 // 빠른 대신에 웹 전체를 실행했을 때도 제대로 돌아간다고 보긴 어려움
 
-@Slf4j
+
 @WebMvcTest
 //컨트롤러 관련 테스트 어노테이션
 public class CardControllerUnitTest {
@@ -58,9 +58,9 @@ public class CardControllerUnitTest {
 	@Test
 	public void save_테스트() throws Exception {
 		//given(테스트를 위한 준비)
-		Card card=new Card(null,"스프링 따라하기");
+		Card card=new Card(null,"스프링 따라하기","");
 		String content=new ObjectMapper().writeValueAsString(card);
-		when(cardService.저장하기(card)).thenReturn(new Card(1L,"스프링 따라하기"));
+		when(cardService.저장하기(card)).thenReturn(new Card(1L,"스프링 따라하기",""));
 		
 		//when(테스트 실행)
 		ResultActions resultAction=mockMvc.perform(post("/card")
@@ -80,8 +80,8 @@ public class CardControllerUnitTest {
 	public void findAll_테스트() throws Exception{
 		//given
 		List<Card> cards=new ArrayList<>();
-		cards.add(new Card(1L,"스프링 부트"));
-		cards.add(new Card(2L,"리액트"));
+		cards.add(new Card(1L,"스프링 부트",""));
+		cards.add(new Card(2L,"리액트",""));
 		when(cardService.모두가져오기()).thenReturn(cards);
 		
 		//when
@@ -101,7 +101,7 @@ public class CardControllerUnitTest {
 	public void findById_테스트() throws Exception{
 		//given
 		Long id=1L;
-		when(cardService.한건가져오기(id)).thenReturn(new Card(1L,"스프링 따라하기"));
+		when(cardService.한건가져오기(id)).thenReturn(new Card(1L,"스프링 따라하기",""));
 		
 		//when
 		ResultActions resultActions=mockMvc.perform(get("/card/{id}",id)
@@ -119,11 +119,11 @@ public class CardControllerUnitTest {
 	public void update_테스트() throws Exception{
 		//given
 		Long id=1L;
-		Card card=new Card(null,"자바 따라하기");
+		Card card=new Card(null,"자바 따라하기","");
 		String content=new ObjectMapper().writeValueAsString(card);
 		
 		when(cardService.수정하기(id,card))
-		  .thenReturn(new Card(1L,"자바 따라하기"));
+		  .thenReturn(new Card(1L,"자바 따라하기",""));
 		
 		//when
 		ResultActions resultActions=mockMvc.perform(put("/card/{id}",id)

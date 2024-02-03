@@ -28,7 +28,7 @@ public class CardRepositoryUnitTest {
 	@Test
 	public void save_테스트() {
 		//given
-		Card card=new Card(null,"카드 넣었다");
+		Card card=new Card(null,"카드 넣었다","");
 		
 		//when
 		Card cardEntity=cardRepository.save(card);

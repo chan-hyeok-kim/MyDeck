@@ -8,17 +8,22 @@ import javax.persistence.SequenceGenerator;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 public class Card {
 
 	@Id//PK를 해당 변수로 하겠다는 뜻
-	@GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "SEQ_CARD")
-	@SequenceGenerator(name = "SEQ_CARD",sequenceName = "SEQ_CARD",allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long cardNo;
     private String cardName;
+    private String cardContents;
 }
